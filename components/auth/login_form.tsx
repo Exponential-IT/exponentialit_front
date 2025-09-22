@@ -79,7 +79,7 @@ export function LoginForm({ onSubmit, loading, error, defaultEmail = "", classNa
 							</div>
 							<div className="flex flex-col gap-3">
 								<Button
-									variant="destructive"
+									variant="default"
 									type="submit"
 									disabled={loading}
 									className="cursor-pointer"

@@ -7,9 +7,10 @@ export type Account = {
 }
 
 export type MeResponse = {
-	user_id: number
 	user: string
+	user_id: number
 	user_email: string
+	maximum_invoices: number
 	total_invoices_user: number
 	accounts: Account[]
 }

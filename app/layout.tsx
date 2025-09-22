@@ -12,6 +12,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
 	title: "ExponentailIT",
 	description: "En desarrollo",
+	icons: {
+		icon: "/isotipo.svg",
+	},
 }
 
 export default function RootLayout({

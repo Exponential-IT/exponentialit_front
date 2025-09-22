@@ -38,7 +38,14 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 			setError(null)
 			// ⬇️ pasamos el AbortSignal a apiMe
 			const me = await apiMe({ signal: ac.signal })
-			setUserData(me.user_id, me.user, me.user_email, me.total_invoices_user, me.accounts ?? [])
+			setUserData(
+				me.user,
+				me.user_id,
+				me.user_email,
+				me.maximum_invoices,
+				me.total_invoices_user,
+				me.accounts ?? []
+			)
 		} catch {
 			// Ignora si fue cancelada
 			if (!ac.signal.aborted) {
