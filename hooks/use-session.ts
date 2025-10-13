@@ -36,7 +36,7 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 
 		try {
 			setError(null)
-			// ⬇️ pasamos el AbortSignal a apiMe
+			// ⬇️ pasa el AbortSignal a apiMe
 			const me = await apiMe({ signal: ac.signal })
 			setUserData(
 				me.user,
@@ -47,7 +47,7 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 				me.accounts ?? []
 			)
 		} catch {
-			// Ignora si fue cancelada
+			// Ignorar si fue cancelada
 			if (!ac.signal.aborted) {
 				setError("No autorizado")
 				if (resetOnError) resetUser()
@@ -66,6 +66,7 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 
 		// 2) revalidación al volver a enfocar la pestaña
 		const onFocus = () => read()
+
 		window.addEventListener("focus", onFocus)
 
 		// 3) polling opcional
