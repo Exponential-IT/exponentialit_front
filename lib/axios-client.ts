@@ -14,6 +14,7 @@ function isFormData(body: unknown): body is FormData {
 const client: AxiosInstance = axios.create({
 	baseURL: "/api",
 	withCredentials: true,
+	headers: { accept: "application/json" },
 	timeout: 30_000,
 })
 

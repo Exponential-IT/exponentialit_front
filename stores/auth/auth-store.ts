@@ -1,6 +1,6 @@
 import { Account } from "@/types/auth"
 import { create, StateCreator } from "zustand"
-import { devtools, persist } from "zustand/middleware"
+import { devtools, persist, createJSONStorage } from "zustand/middleware"
 
 interface UserState {
 	user_id: number | null
@@ -8,19 +8,29 @@ interface UserState {
 	user_email: string
 	maximum_invoices: number
 	total_invoices_user: number
+	total_invoices_month: number
+	total_invoices_success_month: number
+	total_invoices_failed_month: number
+	total_invoices: number
+	total_invoices_success: number
+	total_invoices_failed: number
 	accounts: Account[]
 
-	// flags de runtime
 	loading: boolean
 	triedAutoLogin: boolean
 
-	// actions
 	setUserData: (
 		user: string,
 		user_id: number,
 		user_email: string,
 		maximum_invoices: number,
 		total_invoices_user: number,
+		total_invoices_month: number,
+		total_invoices_success_month: number,
+		total_invoices_failed_month: number,
+		total_invoices: number,
+		total_invoices_success: number,
+		total_invoices_failed: number,
 		accounts: Account[]
 	) => void
 	resetUser: () => void
@@ -28,8 +38,24 @@ interface UserState {
 	setTriedAutoLogin: (value: boolean) => void
 }
 
-// Sólo persistimos esta parte del estado
-type PersistedSlice = Pick<UserState, "user_id" | "accounts">
+const initialState: Omit<UserState, "setUserData" | "resetUser" | "setLoading" | "setTriedAutoLogin"> = {
+	user: "",
+	user_id: null,
+	user_email: "",
+	maximum_invoices: 0,
+	total_invoices_user: 0,
+	total_invoices_month: 0,
+	total_invoices_success_month: 0,
+	total_invoices_failed_month: 0,
+	total_invoices: 0,
+	total_invoices_success: 0,
+	total_invoices_failed: 0,
+	accounts: [],
+	loading: true,
+	triedAutoLogin: false,
+}
+
+type PersistedSlice = Pick<UserState, "user_id" | "user_email" | "user" | "accounts">
 
 const withMiddlewares = (
 	f: StateCreator<UserState, [], [], UserState>
@@ -37,8 +63,11 @@ const withMiddlewares = (
 	devtools(
 		persist<UserState, [], [], PersistedSlice>(f, {
 			name: "userStore",
+			storage: createJSONStorage(() => localStorage),
 			partialize: (s) => ({
 				user_id: s.user_id,
+				user_email: s.user_email,
+				user: s.user, //
 				accounts: s.accounts,
 			}),
 		})
@@ -46,31 +75,45 @@ const withMiddlewares = (
 
 export const useUserStore = create<UserState>()(
 	withMiddlewares((set) => ({
-		user: "",
-		user_id: null,
-		user_email: "",
-		maximum_invoices: 0,
-		total_invoices_user: 0,
-		accounts: [],
+		...initialState,
 
-		loading: true, // arranca en true para mostrar loader
-		triedAutoLogin: false, // evita reintentos infinitos
-
-		setUserData: (user, user_id, user_email, maximum_invoices, total_invoices_user, accounts) =>
-			set({ user, user_id, user_email, maximum_invoices, total_invoices_user, accounts, loading: false }),
+		setUserData: (
+			user,
+			user_id,
+			user_email,
+			maximum_invoices,
+			total_invoices_user,
+			total_invoices_month,
+			total_invoices_success_month,
+			total_invoices_failed_month,
+			total_invoices,
+			total_invoices_success,
+			total_invoices_failed,
+			accounts
+		) =>
+			set({
+				user,
+				user_id,
+				user_email,
+				maximum_invoices,
+				total_invoices_user,
+				total_invoices_month,
+				total_invoices_success_month,
+				total_invoices_failed_month,
+				total_invoices,
+				total_invoices_success,
+				total_invoices_failed,
+				accounts,
+				loading: false,
+			}),
 
 		setLoading: (value) => set({ loading: value }),
 		setTriedAutoLogin: (v) => set({ triedAutoLogin: v }),
 
 		resetUser: () => {
-			set({
-				user_id: null,
-				accounts: [],
-				loading: false,
-				triedAutoLogin: false,
-			})
+			set({ ...initialState, loading: false })
 			try {
-				localStorage.removeItem("userStore") // limpia storage persistido
+				localStorage.removeItem("userStore")
 			} catch {}
 		},
 	}))

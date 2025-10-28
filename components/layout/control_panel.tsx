@@ -11,6 +11,12 @@ export default function ControlPanel() {
 
 	const maximum_invoices = useUserStore((s) => s.maximum_invoices)
 	const total_invoices_user = useUserStore((s) => s.total_invoices_user)
+	const total_invoices_month = useUserStore((s) => s.total_invoices_month)
+	const total_invoices_success_month = useUserStore((s) => s.total_invoices_success_month)
+	const total_invoices_failed_month = useUserStore((s) => s.total_invoices_failed_month)
+	const total_invoices = useUserStore((s) => s.total_invoices)
+	const total_invoices_success = useUserStore((s) => s.total_invoices_success)
+	const total_invoices_failed = useUserStore((s) => s.total_invoices_failed)
 
 	const fecha = new Date().toLocaleDateString("es-ES", {
 		weekday: "long",
@@ -35,37 +41,47 @@ export default function ControlPanel() {
 				{/* Conteo de facturas */}
 				<div>
 					<h3 className="font-medium">Historicos totales</h3>
-					<div className="flex flex-wrap gap-6 items-center justify-start">
-						<InfoCard
-							icon={FileText}
-							label="Total"
-							value={1}
-							color="blue"
-						/>
-						<InfoCard
-							icon={CircleCheckBig}
-							label="Exitosas"
-							value={2}
-							color="red"
-						/>
-						<InfoCard
-							icon={CircleX}
-							label="Errores"
-							value={1}
-							color="green"
-						/>
-						<InfoCard
-							icon={CircleX}
-							label="Este mes"
-							value={0}
-							color="orange"
-						/>
-						<InfoCard
-							icon={CircleX}
-							label="Disponible"
-							value={1000}
-							color="purple"
-						/>
+					<div className="grid grid-cols-3 grid-ro justify-center items-center">
+						<span>
+							<InfoCard
+								icon={FileText}
+								label="Total"
+								value={total_invoices_month}
+								color="blue"
+							/>
+							<InfoCard
+								icon={CircleCheckBig}
+								label="Exitosas"
+								value={total_invoices_success_month}
+								color="green"
+							/>
+							<InfoCard
+								icon={CircleX}
+								label="Errores"
+								value={total_invoices_failed_month}
+								color="red"
+							/>
+						</span>
+						<span className="sm:w-1/2">
+							<InfoCard
+								icon={CircleX}
+								label="Total"
+								value={total_invoices}
+								color="blue"
+							/>
+							<InfoCard
+								icon={CircleX}
+								label="Exitosas"
+								value={total_invoices_success}
+								color="green"
+							/>
+							<InfoCard
+								icon={CircleX}
+								label="Errores"
+								value={total_invoices_failed}
+								color="red"
+							/>
+						</span>
 					</div>
 				</div>
 

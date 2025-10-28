@@ -11,14 +11,13 @@ export interface EventState {
 	previous: string | null
 	results: EventResponse[]
 
-	// FLags de runtime
 	loading_event: boolean
-	triedAutoLogin: boolean
+	events_error: string | null
+	last_updated: number | null
 
-	// Filtros/params extras (para que persista el contexto de búsqueda)
+	triedAutoLogin: boolean
 	params: Record<string, unknown>
 
-	// Actions
 	setEventData: (
 		count: number,
 		page: number,
@@ -29,12 +28,14 @@ export interface EventState {
 		previous: string | null
 	) => void
 	setLoading: (value: boolean) => void
+	setEventsError: (msg: string | null) => void
+	setLastUpdated: (ts: number | null) => void
 	setTriedAutoLogin: (value: boolean) => void
 
-	// Acciones de paginación (solo actualizan el store; el hook hará el fetch)
 	setPage: (page: number) => void
-	setPageSize: (n: number) => void
-	setParams: (p: Record<string, unknown>) => void
+	setPageSize: (n: number, resetPage?: boolean) => void
+	setParams: (p: Record<string, unknown>, resetPage?: boolean) => void
+	refresh: () => void
 }
 
 type PersistedSlice = Pick<EventState, "results" | "params">
@@ -44,7 +45,7 @@ const withMiddlewares = (
 ): StateCreator<EventState, [], [["zustand/devtools", never], ["zustand/persist", PersistedSlice]], EventState> =>
 	devtools(
 		persist<EventState, [], [], PersistedSlice>(f, {
-			name: "userStore",
+			name: "eventStore",
 			partialize: (s) => ({
 				results: s.results,
 				params: s.params,
@@ -59,22 +60,72 @@ export const useEventStore = create<EventState>()(
 		page_size: 10,
 		total_pages: 1,
 		results: [],
-		next: "",
-		previous: "",
+		next: null,
+		previous: null,
 
 		loading_event: true,
-		triedAutoLogin: false,
+		events_error: null,
+		last_updated: null,
 
+		triedAutoLogin: false,
 		params: {},
 
-		setEventData: (count, page, page_size, total_pages, results, next, previous) =>
-			set({ count, page, page_size, total_pages, results, next, previous }),
+		setEventData: (count, page, page_size, total_pages, results, next, previous) => {
+			console.log("🔵 setEventData called with page:", page, "current page:", get().page)
+			set({ count, page, page_size, total_pages, results, next, previous })
+		},
 
 		setLoading: (value) => set({ loading_event: value }),
+		setEventsError: (msg) => set({ events_error: msg }),
+		setLastUpdated: (ts) => set({ last_updated: ts }),
 		setTriedAutoLogin: (v) => set({ triedAutoLogin: v }),
 
-		setPage: (page) => set({ page }),
-		setPageSize: (n) => set({ page_size: n, page: 1 }),
-		setParams: (p) => set({ params: { ...get().params, ...p }, page: 1 }),
+		setPage: (page) => {
+			console.log("🟢 setPage called:", page, "from:", get().page)
+			console.trace("📍 Stack trace:")
+			set({ page })
+		},
+
+		setPageSize: (n, resetPage = true) => {
+			const currentPage = get().page
+			console.log("🟡 setPageSize called:", n, "resetPage:", resetPage, "current page:", currentPage)
+			if (resetPage) {
+				console.log("⚠️  RESETTING PAGE TO 1 from setPageSize")
+				console.trace("📍 Stack trace:")
+			}
+			set({
+				page_size: n,
+				...(resetPage ? { page: 1 } : {}),
+			})
+		},
+
+		setParams: (p, resetPage = true) => {
+			const currentPage = get().page
+			const currentParams = get().params
+			console.log("🟠 setParams called:")
+			console.log("  📦 New params:", p)
+			console.log("  📦 Current params:", currentParams)
+			console.log("  🔄 resetPage:", resetPage)
+			console.log("  📄 Current page:", currentPage)
+
+			if (resetPage) {
+				console.log("⚠️  RESETTING PAGE TO 1 from setParams")
+				console.trace("📍 Stack trace:")
+			}
+
+			set(({ params }) => ({
+				params: { ...params, ...p },
+				...(resetPage ? { page: 1 } : {}),
+			}))
+		},
+
+		refresh: () => {
+			const currentPage = get().page
+			console.log("🔄 refresh called, maintaining page:", currentPage)
+			set(({ params, page }) => ({
+				params: { ...params, _refresh: String(Date.now()) },
+				page,
+			}))
+		},
 	}))
 )

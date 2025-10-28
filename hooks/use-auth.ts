@@ -7,8 +7,6 @@ import { useUserStore } from "@/stores/auth/auth-store"
 export function useAuth() {
 	const router = useRouter()
 	const search = useSearchParams()
-
-	const setUserData = useUserStore((s) => s.setUserData)
 	const resetUser = useUserStore((s) => s.resetUser)
 
 	const [loading, setLoading] = useState(false)
@@ -29,14 +27,7 @@ export function useAuth() {
 					setError("No se pudo obtener la sesión")
 					return false
 				}
-				setUserData(
-					me.user,
-					me.user_id,
-					me.user_email,
-					me.maximum_invoices,
-					me.total_invoices_user,
-					me.accounts ?? []
-				)
+
 				const redirectTo = search.get("redirect") || "/"
 				router.replace(redirectTo)
 				return true
@@ -47,7 +38,7 @@ export function useAuth() {
 				setLoading(false)
 			}
 		},
-		[router, search, setUserData]
+		[router, search]
 	)
 
 	const logout = useCallback(async () => {

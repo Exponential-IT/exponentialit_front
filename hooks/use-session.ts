@@ -5,78 +5,105 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { apiMe } from "@/lib/api"
 import { useUserStore } from "@/stores/auth/auth-store"
 
-type UseSessionOptions = {
-	/** Revalidación periódica (ms). 0 = sin polling. Default: 60s */
-	intervalMs?: number
-	/** Si true, limpia Zustand al fallar /me. Default: true */
-	resetOnError?: boolean
-}
+type UseSessionOptions = { intervalMs?: number; resetOnError?: boolean }
 
 export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSessionOptions = {}) {
 	const setUserData = useUserStore((s) => s.setUserData)
 	const resetUser = useUserStore((s) => s.resetUser)
+	const alreadyHydrated = useUserStore((s) => s.user_id !== null)
 
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(!alreadyHydrated)
 	const [error, setError] = useState<string | null>(null)
 
-	// Referencias para cancelar peticiones y limpiar timers
 	const inflight = useRef<AbortController | null>(null)
 	const timer = useRef<ReturnType<typeof setInterval> | null>(null)
+	const mountedRef = useRef(true)
+
+	const lastRunRef = useRef(0)
+
+	const resetUserRef = useRef(resetUser)
+	const setUserDataRef = useRef(setUserData)
+	useEffect(() => {
+		resetUserRef.current = resetUser
+	}, [resetUser])
+	useEffect(() => {
+		setUserDataRef.current = setUserData
+	}, [setUserData])
 
 	const read = useCallback(async () => {
-		// Cancela petición anterior si existe
-		if (inflight.current) {
-			try {
-				inflight.current.abort()
-			} catch {}
-		}
+		const now = Date.now()
+		if (now - lastRunRef.current < 500) return
+
+		if (inflight.current) return
+
+		lastRunRef.current = now
 
 		const ac = new AbortController()
 		inflight.current = ac
-
 		try {
 			setError(null)
-			// ⬇️ pasa el AbortSignal a apiMe
 			const me = await apiMe({ signal: ac.signal })
-			setUserData(
+			if (!mountedRef.current) return
+
+			setUserDataRef.current(
 				me.user,
 				me.user_id,
 				me.user_email,
 				me.maximum_invoices,
 				me.total_invoices_user,
+				me.total_invoices_month,
+				me.total_invoices_success_month,
+				me.total_invoices_failed_month,
+				me.total_invoices,
+				me.total_invoices_success,
+				me.total_invoices_failed,
 				me.accounts ?? []
 			)
 		} catch {
-			// Ignorar si fue cancelada
-			if (!ac.signal.aborted) {
+			if (!ac.signal.aborted && mountedRef.current) {
 				setError("No autorizado")
-				if (resetOnError) resetUser()
+				if (resetOnError) resetUserRef.current()
 			}
 		} finally {
-			if (!ac.signal.aborted) {
-				setLoading(false)
-				inflight.current = null
-			}
+			if (mountedRef.current && !ac.signal.aborted) setLoading(false)
+			inflight.current = null
 		}
-	}, [resetOnError, resetUser, setUserData])
+	}, [resetOnError])
 
 	useEffect(() => {
-		// 1) primera carga
-		read()
+		mountedRef.current = true
 
-		// 2) revalidación al volver a enfocar la pestaña
-		const onFocus = () => read()
+		const boot = async () => {
+			if (!alreadyHydrated) {
+				await read()
+			} else {
+				setLoading(false)
+			}
 
-		window.addEventListener("focus", onFocus)
-
-		// 3) polling opcional
-		if (intervalMs > 0) {
-			timer.current = setInterval(read, intervalMs)
+			if (intervalMs > 0 && !timer.current) {
+				timer.current = setInterval(() => {
+					read()
+				}, intervalMs)
+			}
 		}
 
+		boot()
+
+		const onFocus = () => read()
+		const onVisibility = () => {
+			if (document.visibilityState === "visible") read()
+		}
+		window.addEventListener("focus", onFocus)
+		document.addEventListener("visibilitychange", onVisibility)
+
 		return () => {
+			mountedRef.current = false
 			window.removeEventListener("focus", onFocus)
-			if (timer.current) clearInterval(timer.current)
+			document.removeEventListener("visibilitychange", onVisibility)
+			if (timer.current) {
+				clearInterval(timer.current)
+				timer.current = null
+			}
 			if (inflight.current) {
 				try {
 					inflight.current.abort()
@@ -84,11 +111,7 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 				inflight.current = null
 			}
 		}
-	}, [intervalMs, read])
+	}, [alreadyHydrated, intervalMs, read])
 
-	return {
-		loading,
-		error,
-		refresh: read,
-	}
+	return { loading, error, refresh: read }
 }

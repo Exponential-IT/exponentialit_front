@@ -24,14 +24,12 @@ export async function POST(req: NextRequest) {
 
 		if (setCookie) {
 			if (Array.isArray(setCookie)) {
-				// múltiples cookies
 				for (const c of setCookie) resp.headers.append("set-cookie", c)
 			} else {
 				resp.headers.set("set-cookie", setCookie)
 			}
 		}
 
-		// Asegura content-type si el backend no lo envía
 		if (!resp.headers.has("content-type")) {
 			resp.headers.set("content-type", "application/json; charset=utf-8")
 		}
@@ -42,7 +40,6 @@ export async function POST(req: NextRequest) {
 	}
 }
 
-// (Opcional) Si alguien hace GET, devuelve 405
 export async function GET() {
 	return NextResponse.json({ message: "Method Not Allowed" }, { status: 405 })
 }

@@ -12,5 +12,11 @@ export type MeResponse = {
 	user_email: string
 	maximum_invoices: number
 	total_invoices_user: number
+	total_invoices_month: number
+	total_invoices_success_month: number
+	total_invoices_failed_month: number
+	total_invoices: number
+	total_invoices_success: number
+	total_invoices_failed: number
 	accounts: Account[]
 }

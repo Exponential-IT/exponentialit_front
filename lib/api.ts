@@ -3,7 +3,7 @@
 
 import http from "@/lib/axios-client"
 import { MeResponse } from "@/types/auth"
-import { EventPagResponse } from "@/types/event"
+import { ApiError, EventListParams, EventPageResponse } from "@/types/event"
 
 /** GET /api/me → { user_id, accounts } */
 export async function apiMe(opts?: { signal?: AbortSignal }) {
@@ -23,26 +23,35 @@ export async function apiLogout(opts?: { signal?: AbortSignal }) {
 	return data
 }
 
+function buildQS(params: Record<string, unknown>) {
+	const qs = new URLSearchParams()
+	Object.entries(params).forEach(([k, v]) => {
+		if (v === undefined || v === null) return
+		if (typeof v === "string" && v.trim() === "") return
+		qs.set(k, String(v))
+	})
+	return qs.toString()
+}
+
 /** GET /api/event */
-export async function apiEvent(
-	params?: { page?: number; page_size?: number; [key: string]: unknown },
-	opts?: { signal?: AbortSignal }
-) {
-	const query = new URLSearchParams()
+export async function apiEvent(params: EventListParams, init?: RequestInit): Promise<EventPageResponse> {
+	const qs = buildQS(params)
+	const url = `/api/event${qs ? `?${qs}` : ""}`
 
-	// primero page y page_size
-	if (params?.page != null) query.set("page", String(params.page))
-	if (params?.page_size != null) query.set("page_size", String(params.page_size))
+	const r = await fetch(url, { ...init })
+	const text = await r.text()
 
-	// luego cualquier otro param
-	for (const [key, value] of Object.entries(params ?? {})) {
-		if (key !== "page" && key !== "page_size" && value !== undefined && value !== null) {
-			query.set(key, String(value))
+	const json = text ? (JSON.parse(text) as unknown) : null
+
+	if (!r.ok) {
+		const err: ApiError = (json as ApiError) ?? {
+			detail: "Error desconocido",
+			error_type: "HTTPError",
+			status_code: r.status,
+			timestamp: new Date().toISOString(),
 		}
+		throw err
 	}
 
-	const url = query.toString() ? `/event?${query.toString()}` : "/event"
-
-	const { data } = await http.get<EventPagResponse>(url, { signal: opts?.signal })
-	return data
+	return json as EventPageResponse
 }
