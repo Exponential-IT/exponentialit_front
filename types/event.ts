@@ -1,32 +1,38 @@
+// types/event.ts
+
 export type ErrorResponse = {
-	error: string
 	event_id: string
-	request_id: string
-	status: string
-	step: string
 	ts: string
+	step: string
+	status: string
+	service: string
+	error: string
+	recommendations?: string | null
+	meta?: Record<string, unknown>
 }
 
 export type EventResponse = {
-	amount_total: string | null
-	amount_tax: string | null
-	date: string | null
-	errors: ErrorResponse[]
-	file_name: string
+	request_id: string
 	has_pipeline_done: boolean
 	invoice_id: string
+	date: string | null
+	file_name: string
 	partner_cif: string
 	partner_name: string
-	request_id: string
+	client_cif: string
+	client_name: string
+	amount_total: string | number | null
+	amount_tax: string | number | null
 }
+
 export interface EventPageResponse {
 	count: number
-	next: string | null
 	page: number
 	page_size: number
+	total_pages: number
+	next: string | null
 	previous: string | null
 	results: EventResponse[]
-	total_pages: number
 }
 
 export type EventListParams = {
@@ -36,9 +42,16 @@ export type EventListParams = {
 	invoice_id?: string
 	file_name?: string
 	partner_cif?: string
+	client_cif?: string // ← NUEVO
 	date_from?: string
 	date_to?: string
 	has_pipeline_done?: boolean
+}
+
+export interface RequestErrorsResponse {
+	request_id: string
+	error_count: number
+	errors: ErrorResponse[]
 }
 
 export interface ApiError {

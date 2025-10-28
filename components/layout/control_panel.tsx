@@ -90,7 +90,7 @@ export default function ControlPanel() {
 				<div className="flex flex-row flex-wrap items-center justify-start gap-2">
 					<p>Uso mensual</p>{" "}
 					<span className="bg-accent text-accent-foreground py-0.5 px-2 rounded-full">
-						{(total_invoices_user / maximum_invoices) * 100} %
+						{((total_invoices_user / maximum_invoices) * 100).toFixed(2)} %
 					</span>
 				</div>
 				<Progress value={(total_invoices_user / maximum_invoices) * 100} />

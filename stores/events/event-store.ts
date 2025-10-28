@@ -84,8 +84,6 @@ export const useEventStore = create<EventState>()(
 		},
 
 		setPageSize: (n, resetPage = true) => {
-			if (resetPage) {
-			}
 			set({
 				page_size: n,
 				...(resetPage ? { page: 1 } : {}),
@@ -100,9 +98,8 @@ export const useEventStore = create<EventState>()(
 		},
 
 		refresh: () => {
-			set(({ params, page }) => ({
+			set(({ params }) => ({
 				params: { ...params, _refresh: String(Date.now()) },
-				page,
 			}))
 		},
 	}))
