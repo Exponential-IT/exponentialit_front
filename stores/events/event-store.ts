@@ -54,7 +54,7 @@ const withMiddlewares = (
 	)
 
 export const useEventStore = create<EventState>()(
-	withMiddlewares((set, get) => ({
+	withMiddlewares((set) => ({
 		count: 0,
 		page: 1,
 		page_size: 10,
@@ -71,7 +71,6 @@ export const useEventStore = create<EventState>()(
 		params: {},
 
 		setEventData: (count, page, page_size, total_pages, results, next, previous) => {
-			console.log("🔵 setEventData called with page:", page, "current page:", get().page)
 			set({ count, page, page_size, total_pages, results, next, previous })
 		},
 
@@ -81,17 +80,11 @@ export const useEventStore = create<EventState>()(
 		setTriedAutoLogin: (v) => set({ triedAutoLogin: v }),
 
 		setPage: (page) => {
-			console.log("🟢 setPage called:", page, "from:", get().page)
-			console.trace("📍 Stack trace:")
 			set({ page })
 		},
 
 		setPageSize: (n, resetPage = true) => {
-			const currentPage = get().page
-			console.log("🟡 setPageSize called:", n, "resetPage:", resetPage, "current page:", currentPage)
 			if (resetPage) {
-				console.log("⚠️  RESETTING PAGE TO 1 from setPageSize")
-				console.trace("📍 Stack trace:")
 			}
 			set({
 				page_size: n,
@@ -100,19 +93,6 @@ export const useEventStore = create<EventState>()(
 		},
 
 		setParams: (p, resetPage = true) => {
-			const currentPage = get().page
-			const currentParams = get().params
-			console.log("🟠 setParams called:")
-			console.log("  📦 New params:", p)
-			console.log("  📦 Current params:", currentParams)
-			console.log("  🔄 resetPage:", resetPage)
-			console.log("  📄 Current page:", currentPage)
-
-			if (resetPage) {
-				console.log("⚠️  RESETTING PAGE TO 1 from setParams")
-				console.trace("📍 Stack trace:")
-			}
-
 			set(({ params }) => ({
 				params: { ...params, ...p },
 				...(resetPage ? { page: 1 } : {}),
@@ -120,8 +100,6 @@ export const useEventStore = create<EventState>()(
 		},
 
 		refresh: () => {
-			const currentPage = get().page
-			console.log("🔄 refresh called, maintaining page:", currentPage)
 			set(({ params, page }) => ({
 				params: { ...params, _refresh: String(Date.now()) },
 				page,

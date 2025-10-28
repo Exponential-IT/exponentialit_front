@@ -23,7 +23,6 @@ export default function Filters() {
 	const [dateTo, setDateTo] = React.useState<string>("")
 
 	const pushInvoiceDebounced = useDebouncedCallback((value: string) => {
-		console.log("🔍 Invoice search (debounced):", value)
 		const param: Partial<Omit<EventListParams, "user">> = { invoice_id: value || undefined }
 		setParams(param, true)
 	}, 500)
@@ -34,7 +33,6 @@ export default function Filters() {
 
 	const applyFilters = React.useCallback(() => {
 		if ((dateFrom && !dateTo) || (!dateFrom && dateTo)) return
-		console.log("🎯 Applying filters")
 		const payload: Partial<Omit<EventListParams, "user">> = {
 			file_name: fileName.trim() || undefined,
 			partner_cif: partnerCif.trim() || undefined,
@@ -42,11 +40,10 @@ export default function Filters() {
 			date_from: dateFrom || undefined,
 			date_to: dateTo || undefined,
 		}
-		setParams(payload, true) // true = resetea a página 1
+		setParams(payload, true)
 	}, [fileName, partnerCif, hasPipelineDone, dateFrom, dateTo, setParams])
 
 	const clearAll = React.useCallback(() => {
-		console.log("🧹 Clearing all filters")
 		setInvoiceId("")
 		setFileName("")
 		setPartnerCif("")
@@ -61,7 +58,7 @@ export default function Filters() {
 			date_from: undefined,
 			date_to: undefined,
 		}
-		setParams(payload, true) // true = resetea a página 1
+		setParams(payload, true)
 	}, [setParams])
 
 	return (
@@ -73,7 +70,7 @@ export default function Filters() {
 
 			<CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
 				<div className="flex flex-col gap-1">
-					<label className="text-sm font-medium">Buscar por Nº Factura</label>
+					<label className="text-sm font-medium">Buscar por Nombre archivo</label>
 					<Input
 						placeholder="Escribe para buscar..."
 						value={invoiceId}
@@ -82,17 +79,6 @@ export default function Filters() {
 						autoComplete="off"
 					/>
 					<span className="text-xs text-muted-foreground">Coincidencia parcial (case-insensitive)</span>
-				</div>
-
-				<div className="flex flex-col gap-1">
-					<label className="text-sm font-medium">Nombre de archivo</label>
-					<Input
-						placeholder="p. ej. 'factura pdf'"
-						value={fileName}
-						onChange={(e) => setFileName(e.target.value)}
-						disabled={loading}
-						autoComplete="off"
-					/>
 				</div>
 
 				<div className="flex flex-col gap-1">

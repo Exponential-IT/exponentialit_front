@@ -20,7 +20,7 @@ export function useEventPassive() {
 	const goto = useCallback(
 		(p: number) => {
 			const bounded = Math.max(1, total_pages ? Math.min(p, total_pages) : p)
-			console.log("➡️  goto (passive) called:", p, "bounded:", bounded, "current:", page)
+
 			if (bounded !== page) setPage(bounded)
 		},
 		[setPage, page, total_pages]
@@ -28,19 +28,18 @@ export function useEventPassive() {
 
 	const next = useCallback(() => {
 		const target = total_pages ? Math.min(page + 1, total_pages) : page + 1
-		console.log("⏭️  next (passive) called, target:", target)
+
 		if (target !== page) setPage(target)
 	}, [setPage, page, total_pages])
 
 	const prev = useCallback(() => {
 		const target = Math.max(1, page - 1)
-		console.log("⏮️  prev (passive) called, target:", target)
+
 		if (target !== page) setPage(target)
 	}, [setPage, page])
 
 	const setPageSize = useCallback(
 		(n: number, resetPage = true) => {
-			console.log("📏 setPageSize (passive) called:", n, "resetPage:", resetPage)
 			setPS(n, resetPage)
 		},
 		[setPS]
@@ -48,14 +47,12 @@ export function useEventPassive() {
 
 	const setParams = useCallback(
 		(p: Partial<Omit<EventListParams, "user">>, resetPage = true) => {
-			console.log("🎯 setParams (passive) called:", p, "resetPage:", resetPage)
 			setParamsStore(p as Record<string, unknown>, resetPage)
 		},
 		[setParamsStore]
 	)
 
 	const refresh = useCallback(() => {
-		console.log("🔄 refresh (passive) called")
 		refreshStore()
 	}, [refreshStore])
 
