@@ -2,7 +2,6 @@
 import { useState, FormEvent } from "react"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
 import { Button } from "../ui/button"
 import { toast } from "sonner"
 import { useEffect } from "react"
@@ -90,9 +89,12 @@ export function LoginForm({ onSubmit, loading, error, defaultEmail = "", classNa
 						</div>
 						<div className="mt-4 text-center text-sm">
 							¿Aún no tienes una cuenta?{" "}
-							<Button variant="ghost">
-								<Link href="/">Contáctanos</Link>
-							</Button>
+							<a
+								href="mailto:soporte@exponentialit.net"
+								className="text-primary hover:underline font-medium"
+							>
+								Contáctanos
+							</a>
 						</div>
 					</form>
 				</CardContent>

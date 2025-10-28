@@ -58,11 +58,11 @@
 	--radius: 0.625rem;
 
 	/* Base */
-	--background: oklch(0.98 0.01 250); /* casi blanco azulado */
+	--background: oklch(0.9 0.01 250); /* casi blanco azulado */
 	--foreground: oklch(0.2 0.04 250); /* azul muy oscuro para texto */
 
 	/* Card / Popover */
-	--card: oklch(1 0 0); /* blanco */
+	--card: oklch(96.367% 0.00182 249.214); /* blanco */
 	--card-foreground: oklch(0.2 0.04 250);
 
 	--popover: oklch(1 0 0);
@@ -169,6 +169,7 @@
 	body {
 		@apply bg-background text-foreground;
 		font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+		user-select: none;
 	}
 
 	h1,
@@ -178,5 +179,9 @@
 	h5,
 	h6 {
 		font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+	}
+
+	button {
+		cursor: pointer;
 	}
 }

@@ -7,11 +7,11 @@ type Props = {
 	className?: string
 }
 
-export default function Isotipo({ className, ...props }: Props) {
+export default function Logotipo({ className, ...props }: Props) {
 	return (
 		<Image
-			src="/isotipo.svg"
-			alt="ExponentialIT isotipo"
+			src="/logotipo.svg"
+			alt="ExponentialIT logotipo"
 			width={70}
 			height={70}
 			priority

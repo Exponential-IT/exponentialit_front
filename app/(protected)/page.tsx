@@ -3,7 +3,6 @@
 import { useSession } from "@/hooks/use-session"
 import { useUserStore } from "@/stores/auth/auth-store"
 import Header from "@/components/layout/header"
-import Footer from "@/components/layout/footer"
 import ControlPanel from "@/components/layout/control_panel"
 import HistoricalTotals from "@/components/layout/historical_totals"
 import Filters from "@/components/layout/filters"
@@ -44,14 +43,13 @@ export default function Home() {
 	}
 
 	return (
-		<div className="bg-muted flex min-h-svh flex-col gap-4">
+		<div className="flex flex-col min-h-svh gap-2 pt-2 max-w-7xl ml-auto mr-auto">
 			<Header />
-			<main className="w-full flex flex-col gap-4 p-2 md:px-6 xl:px-10">
+			<main className="flex flex-col gap-4 p-2 sm:p-4 md:px-8">
 				<ControlPanel />
 				<Filters />
 				<HistoricalTotals />
 			</main>
-			<Footer />
 		</div>
 	)
 }

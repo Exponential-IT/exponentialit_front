@@ -7,10 +7,10 @@ import Isotipo from "../common/isotipo"
 
 export default function Footer() {
 	return (
-		<footer className="w-full border-t bg-background text-center">
+		<footer className="w-full border-t text-center bg-card">
 			<div className="mx-auto max-w-7xl p-2">
 				<div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-					<Isotipo />
+					<Isotipo className="w-20 h-auto" />
 					<p className="text-sm text-muted-foreground">
 						© {new Date().getFullYear()} ExponentialIT. Todos los derechos reservados.
 					</p>

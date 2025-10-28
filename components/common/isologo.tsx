@@ -1,16 +1,22 @@
 "use client"
 import React from "react"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
-export default function Isologo() {
+type Props = {
+	className?: string
+}
+
+export default function Isologo({ className, ...props }: Props) {
 	return (
 		<Image
 			src="/isologo.svg"
 			alt="ExponentialIT Isologo"
-			width={150}
-			height={150}
+			width={70}
+			height={70}
 			priority
-			className="w-28 h-auto"
+			className={cn("flex flex-col gap-6", className)}
+			{...props}
 		/>
 	)
 }
