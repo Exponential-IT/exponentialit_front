@@ -3,7 +3,6 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import SeedUser from "./seed-user"
 import type { MeResponse } from "@/types/auth"
-import Footer from "@/components/layout/footer"
 
 async function getMeServer(): Promise<MeResponse> {
 	const cookieName = process.env.AUTH_COOKIE_NAME ?? "refresh_token"
@@ -27,7 +26,6 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 		<>
 			<SeedUser me={me} />
 			{children}
-			<Footer />
 		</>
 	)
 }

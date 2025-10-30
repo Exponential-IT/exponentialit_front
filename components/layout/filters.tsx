@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 import type { EventListParams } from "@/types/event"
 import { useDebouncedCallback } from "@/hooks/use-debounced"
@@ -82,11 +82,12 @@ export default function Filters() {
 		pushSupplierDebounced(supplierName.trim())
 	}, [supplierName, pushSupplierDebounced])
 
-	// Debounce para Supplier
+	// Debounce para FileName
 	const pushFileNameDebounced = useDebouncedCallback((value: string) => {
 		const param: Partial<Omit<EventListParams, "user">> = { file_name: value || undefined }
 		setParams(param, true)
 	}, 800)
+
 	React.useEffect(() => {
 		pushFileNameDebounced(fileName.trim())
 	}, [fileName, pushFileNameDebounced])
@@ -125,44 +126,40 @@ export default function Filters() {
 	}, [setParams])
 
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle className="flex items-center justify-between">
-					<span>Filtros y Búsqueda</span>
-					{activeFiltersCount > 0 && (
-						<Badge
-							variant="secondary"
-							className="ml-2"
+		<Collapsible
+			open={isOpen}
+			onOpenChange={setIsOpen}
+		>
+			<Card>
+				<CardHeader>
+					<CollapsibleTrigger asChild>
+						<button
+							type="button"
+							aria-expanded={isOpen}
+							className="w-full flex items-center justify-between cursor-pointer select-none rounded-md p-2 hover:bg-muted/60"
 						>
-							{activeFiltersCount} {activeFiltersCount === 1 ? "filtro activo" : "filtros activos"}
-						</Badge>
-					)}
-				</CardTitle>
-				<Separator />
-			</CardHeader>
+							<CardTitle className="flex items-center justify-between w-full">
+								<span>Filtros y Búsqueda</span>
+								<div className="flex items-center gap-2">
+									{activeFiltersCount > 0 && (
+										<Badge variant="secondary">
+											{activeFiltersCount}{" "}
+											{activeFiltersCount === 1 ? "filtro activo" : "filtros activos"}
+										</Badge>
+									)}
+									<ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+								</div>
+							</CardTitle>
+							<span className="sr-only">Alternar filtros</span>
+						</button>
+					</CollapsibleTrigger>
+					<Separator />
+				</CardHeader>
 
-			<CardContent>
-				<Collapsible
-					open={isOpen}
-					onOpenChange={setIsOpen}
-				>
-					<div className="flex items-center justify-between">
-						<h4 className="text-sm font-semibold">Filtros</h4>
-						<CollapsibleTrigger asChild>
-							<Button
-								variant="ghost"
-								size="sm"
-								className="w-9 p-0"
-							>
-								{isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-								<span className="sr-only">Toggle</span>
-							</Button>
-						</CollapsibleTrigger>
-					</div>
-
-					<CollapsibleContent className="space-y-4 pt-4">
+				<CardContent>
+					<CollapsibleContent className="space-y-4 pt-2">
 						{/* Grid responsiva */}
-						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+						<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 							{/* Nombre de archivo */}
 							<div className="flex flex-col gap-1">
 								<label className="text-sm font-medium">Nombre de archivo</label>
@@ -172,7 +169,6 @@ export default function Filters() {
 									onChange={(e) => setFileName(e.target.value)}
 									disabled={loading}
 									autoComplete="off"
-									className="max-w-xs"
 								/>
 								<span className="text-xs text-muted-foreground">
 									Coincidencia parcial (case-insensitive)
@@ -183,14 +179,15 @@ export default function Filters() {
 							<div className="flex flex-col gap-1">
 								<label className="text-sm font-medium">Proveedor</label>
 								<Input
-									placeholder="p.ej. Exponen… "
+									placeholder="p.ej. Exponen…"
 									value={supplierName}
 									onChange={(e) => setSupplierName(e.target.value)}
 									disabled={loading}
 									autoComplete="off"
-									className="max-w-xs"
 								/>
-								<span className="text-xs text-muted-foreground">Búsqueda diferida (debounced)</span>
+								<span className="text-xs text-muted-foreground">
+									Coincidencia parcial (case-insensitive)
+								</span>
 							</div>
 
 							{/* Estado */}
@@ -201,7 +198,7 @@ export default function Filters() {
 									onValueChange={(v) => setHasPipelineDone(v as "all" | "true" | "false")}
 									disabled={loading}
 								>
-									<SelectTrigger className="w-56">
+									<SelectTrigger className="w-full">
 										<SelectValue placeholder="Todos" />
 									</SelectTrigger>
 									<SelectContent>
@@ -222,10 +219,10 @@ export default function Filters() {
 									onValueChange={(v) => setSelectedAccountTaxId(v || "all")}
 									disabled={loading}
 								>
-									<SelectTrigger className="w-56">
+									<SelectTrigger className="w-full">
 										<SelectValue placeholder="Todas" />
 									</SelectTrigger>
-									<SelectContent className="max-h-72">
+									<SelectContent>
 										<SelectGroup>
 											<SelectItem
 												key="all"
@@ -257,8 +254,8 @@ export default function Filters() {
 									value={range}
 									onChange={handleRange}
 									disabled={loading}
-									classNameTrigger="w-full md:max-w-xs"
 									classNamePopover="z-50"
+									classNameTrigger="max-w-md"
 									numberOfMonths={1}
 									disableFuture
 								/>
@@ -288,8 +285,8 @@ export default function Filters() {
 							</Button>
 						</div>
 					</CollapsibleContent>
-				</Collapsible>
-			</CardContent>
-		</Card>
+				</CardContent>
+			</Card>
+		</Collapsible>
 	)
 }

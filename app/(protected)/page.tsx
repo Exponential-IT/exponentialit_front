@@ -7,11 +7,11 @@ import ControlPanel from "@/components/layout/control_panel"
 import HistoricalTotals from "@/components/layout/historical_totals"
 import Filters from "@/components/layout/filters"
 import Loading from "@/components/loaders/load"
-import ErrorCommon from "@/components/common/error"
 import { useEventController } from "@/hooks/use-event-controller"
+import Footer from "@/components/layout/footer"
 
 export default function Home() {
-	const { loading: sessLoading, error: sessError } = useSession({ intervalMs: 60_000 })
+	const { loading: sessLoading } = useSession({ intervalMs: 60_000 })
 
 	const userEmail = useUserStore((s) => s.user_email)
 	const isAuthed = useUserStore((s) => s.user_id !== null)
@@ -26,14 +26,6 @@ export default function Home() {
 		)
 	}
 
-	if (sessError) {
-		return (
-			<div className="min-h-svh flex items-center justify-center">
-				<ErrorCommon error={sessError} />
-			</div>
-		)
-	}
-
 	if (!isAuthed || !userEmail) {
 		return (
 			<div className="min-h-svh flex items-center justify-center">
@@ -43,13 +35,14 @@ export default function Home() {
 	}
 
 	return (
-		<div className="flex flex-col min-h-svh gap-2 pt-2 max-w-7xl ml-auto mr-auto">
+		<div className="flex flex-col min-h-svh gap-4 pt-2">
 			<Header />
-			<main className="flex flex-col gap-4 p-2 sm:p-4 md:px-8">
+			<main className="flex flex-col gap-4 px-2 sm:px-3 md:px-4">
 				<ControlPanel />
 				<Filters />
 				<HistoricalTotals />
 			</main>
+			<Footer />
 		</div>
 	)
 }
