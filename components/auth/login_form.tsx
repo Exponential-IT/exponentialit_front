@@ -93,61 +93,6 @@ export function LoginForm({ onSubmit, loading, error, defaultEmail = "", classNa
 				</FieldDescription>
 				<FieldSeparator>hola</FieldSeparator>
 			</FieldGroup>
-			{/* <div className="flex flex-col gap-6">
-				<div className="grid gap-3">
-					<label
-						htmlFor="email"
-						className="text-sm font-medium"
-					>
-						Email
-					</label>
-					<input
-						id="email"
-						type="email"
-						autoComplete="username"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						className="border rounded px-3 py-2 text-sm"
-						required
-					/>
-				</div>
-				<div className="grid gap-3">
-					<label
-						htmlFor="password"
-						className="text-sm font-medium"
-					>
-						Contraseña
-					</label>
-					<input
-						id="password"
-						type="password"
-						autoComplete="current-password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className="border rounded px-3 py-2 text-sm"
-						required
-					/>
-				</div>
-				<div className="flex flex-col gap-3">
-					<Button
-						variant="default"
-						type="submit"
-						disabled={loading}
-						className="cursor-pointer"
-					>
-						{loading ? "Ingresando" : "Ingresar"}
-					</Button>
-				</div>
-			</div>
-			<div className="mt-4 text-center text-sm">
-				¿Aún no tienes una cuenta?{" "}
-				<a
-					href="mailto:soporte@exponentialit.net"
-					className="text-primary hover:underline font-medium"
-				>
-					Contáctanos
-				</a>
-			</div> */}
 		</form>
 	)
 }
