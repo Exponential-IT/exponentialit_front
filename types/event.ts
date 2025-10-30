@@ -42,6 +42,7 @@ export type EventListParams = {
 	invoice_id?: string
 	file_name?: string
 	partner_cif?: string
+	partner_name?: string
 	client_cif?: string // ← NUEVO
 	date_from?: string
 	date_to?: string
