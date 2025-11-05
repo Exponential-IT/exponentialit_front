@@ -38,12 +38,10 @@ export function LoginForm({ onSubmit, loading, error, defaultEmail = "", classNa
 			<FieldGroup>
 				<div className="flex flex-col items-center gap-1 text-center">
 					<h1 className="text-2xl font-bold">Ingresa a tu cuenta</h1>
-					<p className="text-muted-foreground text-sm text-balance">
-						Para ingresar a la cuenta ingresa tu email
-					</p>
 				</div>
+				<FieldSeparator>Ingresa tu correo electrónico</FieldSeparator>
 				<Field>
-					<FieldLabel htmlFor="email">Email</FieldLabel>
+					<FieldLabel htmlFor="email">Correo</FieldLabel>
 					<Input
 						id="email"
 						type="email"
@@ -55,13 +53,13 @@ export function LoginForm({ onSubmit, loading, error, defaultEmail = "", classNa
 				</Field>
 				<Field>
 					<div className="flex items-center">
-						<FieldLabel htmlFor="password">Password</FieldLabel>
-						<a
+						<FieldLabel htmlFor="password">Contraseña</FieldLabel>
+						{/* <a
 							href="#"
 							className="ml-auto text-sm underline-offset-4 hover:underline"
 						>
 							Forgot your password?
-						</a>
+						</a> */}
 					</div>
 					<Input
 						id="password"
@@ -91,7 +89,6 @@ export function LoginForm({ onSubmit, loading, error, defaultEmail = "", classNa
 						Contáctanos
 					</a>
 				</FieldDescription>
-				<FieldSeparator>hola</FieldSeparator>
 			</FieldGroup>
 		</form>
 	)

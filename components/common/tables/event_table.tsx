@@ -14,7 +14,7 @@ export function EventsTable() {
 	const { results } = useEventStore()
 
 	return (
-		<Table className="select-none">
+		<Table className="select-none ">
 			<TableCaption>Eventos en Exponentialit</TableCaption>
 			<TableHeader>
 				<TableRow>
@@ -39,7 +39,7 @@ export function EventsTable() {
 
 			<TableFooter>
 				<TableRow>
-					<TableCell colSpan={4}>Número de eventos</TableCell>
+					<TableCell colSpan={4}>Filas</TableCell>
 					<TableCell className="text-right">{results.length}</TableCell>
 				</TableRow>
 			</TableFooter>
