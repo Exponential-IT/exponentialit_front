@@ -9,9 +9,22 @@ import {
 	TableRow,
 } from "@/components/ui/table"
 import { useEventStore } from "@/stores/events/event-store"
+import { EventResponse } from "@/types/event"
+import { useCallback } from "react"
 
-export function EventsTable() {
+interface EventsTableProps {
+	onRowClick?: (event: EventResponse) => void
+}
+
+export function EventsTable({ onRowClick }: EventsTableProps) {
 	const { results } = useEventStore()
+
+	const handleClick = useCallback(
+		(eventData: EventResponse) => {
+			if (onRowClick) onRowClick(eventData)
+		},
+		[onRowClick]
+	)
 
 	return (
 		<Table className="select-none ">
@@ -27,7 +40,10 @@ export function EventsTable() {
 			</TableHeader>
 			<TableBody>
 				{results.map((event) => (
-					<TableRow key={event.request_id}>
+					<TableRow
+						key={event.request_id}
+						onClick={() => handleClick(event)}
+					>
 						<TableCell className="font-medium max-w-[100px] truncate">{event.partner_name}</TableCell>
 						<TableCell className="max-w-[100px] truncate">{event.client_name}</TableCell>
 						<TableCell className="max-w-[100px] truncate">{event.file_name}</TableCell>

@@ -69,8 +69,6 @@ export function useEventController({ user, intervalMs = 60_000 }: Options) {
 				const nextPageSize = Number(event.page_size)
 				const nextTotalPages = Number(event.total_pages)
 
-				console.log(event)
-
 				setEventData(
 					Number(event.count ?? 0),
 					nextPage,
