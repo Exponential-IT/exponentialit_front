@@ -1,16 +1,5 @@
 // types/event.ts
 
-export type ErrorResponse = {
-	event_id: string
-	ts: string
-	step: string
-	status: string
-	service: string
-	error: string
-	recommendations?: string | null
-	meta?: Record<string, unknown>
-}
-
 export type EventResponse = {
 	request_id: string
 	has_pipeline_done: boolean
@@ -43,21 +32,8 @@ export type EventListParams = {
 	file_name?: string
 	partner_cif?: string
 	partner_name?: string
-	client_cif?: string // ← NUEVO
+	client_cif?: string
 	date_from?: string
 	date_to?: string
 	has_pipeline_done?: boolean
-}
-
-export interface RequestErrorsResponse {
-	request_id: string
-	error_count: number
-	errors: ErrorResponse[]
-}
-
-export interface ApiError {
-	detail: string
-	error_type: string
-	status_code: number
-	timestamp: string
 }

@@ -4,7 +4,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useEventStore, type EventState } from "@/stores/events/event-store"
 import { apiEvent } from "@/lib/api"
-import type { ApiError, EventListParams, EventPageResponse } from "@/types/event"
+import type { EventListParams, EventPageResponse } from "@/types/event"
+import { ApiError } from "@/types/error"
 
 const useSel = <T>(sel: (s: EventState) => T) => useEventStore(sel)
 

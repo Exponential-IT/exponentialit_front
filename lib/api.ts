@@ -3,7 +3,8 @@
 
 import http from "@/lib/axios-client"
 import { MeResponse } from "@/types/auth"
-import { ApiError, EventListParams, EventPageResponse } from "@/types/event"
+import { ApiError, RequestErrorsResponse } from "@/types/error"
+import { EventListParams, EventPageResponse } from "@/types/event"
 
 /** GET /api/me → { user_id, accounts } */
 export async function apiMe(opts?: { signal?: AbortSignal }) {
@@ -54,4 +55,37 @@ export async function apiEvent(params: EventListParams, init?: RequestInit): Pro
 	}
 
 	return json as EventPageResponse
+}
+
+/** GET /api/error */
+export async function ApiErorByRequestId(request_id: string, init?: RequestInit): Promise<RequestErrorsResponse> {
+	const url = `/api/error/${encodeURIComponent(request_id)}`
+	const r = await fetch(url, { ...init })
+
+	const contentType = r.headers.get("content-type") ?? ""
+	const text = await r.text()
+
+	const data = contentType.includes("application/json") && text ? safeJson(text) : null
+
+	if (!r.ok) {
+		const err: ApiError =
+			(data as ApiError) ??
+			({
+				detail: text || "Error desconocido",
+				error_type: "HTTPError",
+				status_code: r.status,
+				timestamp: new Date().toISOString(),
+			} as ApiError)
+		throw err
+	}
+
+	return (data ?? ({} as unknown)) as RequestErrorsResponse
+}
+
+function safeJson(s: string) {
+	try {
+		return JSON.parse(s)
+	} catch {
+		return null
+	}
 }
