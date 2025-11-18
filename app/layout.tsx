@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Montserrat } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const montserrat = Montserrat({
 	variable: "--font-montserrat",
@@ -26,6 +27,7 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={`${montserrat.variable} antialiased font-sans`}>
 				{children}
+				<SpeedInsights />
 				<Toaster
 					position="bottom-right"
 					closeButton
