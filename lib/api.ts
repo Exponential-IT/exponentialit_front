@@ -58,7 +58,7 @@ export async function apiEvent(params: EventListParams, init?: RequestInit): Pro
 }
 
 /** GET /api/error */
-export async function ApiErorByRequestId(request_id: string, init?: RequestInit): Promise<RequestErrorsResponse> {
+export async function ApiErrorByRequestId(request_id: string, init?: RequestInit): Promise<RequestErrorsResponse> {
 	const url = `/api/error/${encodeURIComponent(request_id)}`
 	const r = await fetch(url, { ...init })
 
@@ -82,6 +82,32 @@ export async function ApiErorByRequestId(request_id: string, init?: RequestInit)
 	return (data ?? ({} as unknown)) as RequestErrorsResponse
 }
 
+/** Delete /api/delete */
+export async function ApiDeleteByRequestId(request_id: string, init?: RequestInit) {
+	const url = `/api/delete/${encodeURIComponent(request_id)}`
+	const r = await fetch(url, { ...init, method: "DELETE" })
+
+	const contentType = r.headers.get("content-type") ?? ""
+	const text = await r.text()
+
+	const data = contentType.includes("application/json") && text ? safeJson(text) : null
+
+	if (!r.ok) {
+		const err: ApiError =
+			(data as ApiError) ??
+			({
+				detail: text || "Error desconocido",
+				error_type: "HTTPError",
+				status_code: r.status,
+				timestamp: new Date().toISOString(),
+			} as ApiError)
+		throw err
+	}
+
+	return (data ?? ({} as unknown)) as RequestErrorsResponse
+}
+
+/** HELPERS */
 function safeJson(s: string) {
 	try {
 		return JSON.parse(s)

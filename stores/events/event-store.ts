@@ -36,6 +36,8 @@ export interface EventState {
 	setPageSize: (n: number, resetPage?: boolean) => void
 	setParams: (p: Record<string, unknown>, resetPage?: boolean) => void
 	refresh: () => void
+
+	removeEventByRequestId: (requestId: string) => void
 }
 
 type PersistedSlice = Pick<EventState, "results" | "params">
@@ -102,5 +104,12 @@ export const useEventStore = create<EventState>()(
 				params: { ...params, _refresh: String(Date.now()) },
 			}))
 		},
+
+		removeEventByRequestId: (requestId) =>
+			set((state) => ({
+				...state,
+				results: state.results.filter((e) => e.request_id !== requestId),
+				count: Math.max(0, state.count - 1),
+			})),
 	}))
 )

@@ -1,6 +1,6 @@
 "use-client"
 
-import { ApiErorByRequestId } from "@/lib/api"
+import { ApiErrorByRequestId } from "@/lib/api"
 import { RequestErrorsResponse, ApiError } from "@/types/error"
 import { useEffect, useRef, useState } from "react"
 
@@ -25,7 +25,7 @@ export function useRequestErrors(request_id: string | null, enable: boolean) {
 			try {
 				setLoading(true)
 				setError(null)
-				const res = await ApiErorByRequestId(request_id, { signal: ac.signal })
+				const res = await ApiErrorByRequestId(request_id, { signal: ac.signal })
 				setData(res)
 			} catch (err: unknown) {
 				if (!ac.signal.aborted) {
