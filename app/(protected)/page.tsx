@@ -1,14 +1,15 @@
 "use client"
 
-import { useSession } from "@/hooks/use-session"
-import { useUserStore } from "@/stores/auth/auth-store"
+import Footer from "@/components/layout/footer"
 import Header from "@/components/layout/header"
+import Loading from "@/components/loaders/load"
+import Filters from "@/components/layout/filters"
 import ControlPanel from "@/components/layout/control_panel"
 import HistoricalTotals from "@/components/layout/historical_totals"
-import Filters from "@/components/layout/filters"
-import Loading from "@/components/loaders/load"
+
+import { useUserStore } from "@/stores/auth/auth-store"
+import { useSession } from "@/hooks/use-session"
 import { useEventController } from "@/hooks/use-event-controller"
-import Footer from "@/components/layout/footer"
 
 export default function Home() {
 	const { loading: sessLoading } = useSession({ intervalMs: 60_000 })
