@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useEventStore, type EventState } from "@/stores/events/event-store"
 import { apiEvent } from "@/lib/api"
 import type { EventListParams, EventPageResponse } from "@/types/event"
-import { ApiError } from "@/types/error"
+import type { ApiError } from "@/types/error"
 
 const useSel = <T>(sel: (s: EventState) => T) => useEventStore(sel)
 
@@ -34,7 +34,7 @@ export function useEventController({ user, intervalMs = 60_000 }: Options) {
 	const doFetchRef = useRef<() => Promise<void>>(async () => {})
 
 	useEffect(() => {
-		setParamsStore({ user }, false) // false = no resetear página
+		setParamsStore({ user }, false)
 	}, [user, setParamsStore])
 
 	const defineFetch = useCallback(() => {

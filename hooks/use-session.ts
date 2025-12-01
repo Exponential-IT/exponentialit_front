@@ -1,9 +1,9 @@
-// hooks/use-session.ts
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { apiMe } from "@/lib/api"
 import { useUserStore } from "@/stores/auth/auth-store"
+import type { ApiError } from "@/types/error"
 
 type UseSessionOptions = { intervalMs?: number; resetOnError?: boolean }
 
@@ -18,14 +18,15 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 	const inflight = useRef<AbortController | null>(null)
 	const timer = useRef<ReturnType<typeof setInterval> | null>(null)
 	const mountedRef = useRef(true)
-
 	const lastRunRef = useRef(0)
 
 	const resetUserRef = useRef(resetUser)
 	const setUserDataRef = useRef(setUserData)
+
 	useEffect(() => {
 		resetUserRef.current = resetUser
 	}, [resetUser])
+
 	useEffect(() => {
 		setUserDataRef.current = setUserData
 	}, [setUserData])
@@ -33,7 +34,6 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 	const read = useCallback(async () => {
 		const now = Date.now()
 		if (now - lastRunRef.current < 500) return
-
 		if (inflight.current) return
 
 		lastRunRef.current = now
@@ -59,9 +59,11 @@ export function useSession({ intervalMs = 60_000, resetOnError = true }: UseSess
 				me.total_invoices_failed,
 				me.accounts ?? []
 			)
-		} catch {
+		} catch (err: unknown) {
 			if (!ac.signal.aborted && mountedRef.current) {
-				setError("No autorizado")
+				const apiErr = err as Partial<ApiError> | undefined
+				const msg = String(apiErr?.detail ?? "No autorizado")
+				setError(msg)
 				if (resetOnError) resetUserRef.current()
 			}
 		} finally {

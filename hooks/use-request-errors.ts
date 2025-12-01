@@ -1,7 +1,7 @@
-"use-client"
+"use client"
 
 import { ApiErrorByRequestId } from "@/lib/api"
-import { RequestErrorsResponse, ApiError } from "@/types/error"
+import type { RequestErrorsResponse, ApiError } from "@/types/error"
 import { useEffect, useRef, useState } from "react"
 
 export function useRequestErrors(request_id: string | null, enable: boolean) {

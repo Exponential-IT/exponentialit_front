@@ -1,7 +1,7 @@
 "use client"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useCallback } from "react"
-import { loginRequest, fetchMe, logoutRequest } from "@/lib/services/auth"
+import { apiLogin, apiMe, apiLogout } from "@/lib/api"
 import { useUserStore } from "@/stores/auth/auth-store"
 
 export function useAuth() {
@@ -17,12 +17,12 @@ export function useAuth() {
 			setLoading(true)
 			setError(null)
 			try {
-				const res = await loginRequest({ email, password })
+				const res = await apiLogin({ email, password })
 				if (res.status < 200 || res.status >= 300) {
 					setError("Credenciales inválidas")
 					return false
 				}
-				const me = await fetchMe()
+				const me = await apiMe()
 				if (me?.user_id == null) {
 					setError("No se pudo obtener la sesión")
 					return false
@@ -43,7 +43,7 @@ export function useAuth() {
 
 	const logout = useCallback(async () => {
 		try {
-			await logoutRequest()
+			await apiLogout()
 		} catch {}
 		resetUser()
 		router.replace("/login")

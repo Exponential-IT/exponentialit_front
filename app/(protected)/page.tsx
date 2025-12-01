@@ -1,7 +1,4 @@
 "use client"
-
-import Footer from "@/components/layout/footer"
-import Header from "@/components/layout/header"
 import Loading from "@/components/loaders/load"
 import Filters from "@/components/layout/filters"
 import ControlPanel from "@/components/layout/control_panel"
@@ -21,7 +18,7 @@ export default function Home() {
 
 	if (sessLoading) {
 		return (
-			<div className="min-h-svh flex items-center justify-center">
+			<div className="w-full min-h-svh flex items-center justify-center">
 				<Loading ClassName="p-8" />
 			</div>
 		)
@@ -29,21 +26,17 @@ export default function Home() {
 
 	if (!isAuthed || !userEmail) {
 		return (
-			<div className="min-h-svh flex items-center justify-center">
+			<div className="w-full min-h-svh flex items-center justify-center ">
 				<Loading ClassName="p-8" />
 			</div>
 		)
 	}
 
 	return (
-		<div className="flex flex-col min-h-svh gap-4 pt-2">
-			<Header />
-			<main className="flex flex-col gap-4 px-2 sm:px-3 md:px-4">
-				<ControlPanel />
-				<Filters />
-				<HistoricalTotals />
-			</main>
-			<Footer />
+		<div className="flex flex-1 flex-col gap-4 p-4">
+			<ControlPanel />
+			<Filters />
+			<HistoricalTotals />
 		</div>
 	)
 }

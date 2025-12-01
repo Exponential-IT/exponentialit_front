@@ -29,14 +29,14 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
 		const resp = new NextResponse(bodyText, { status: upstream.status })
 
 		const ct = upstream.headers.get("content-type")
-		resp.headers.set("content-type", ct ?? "application/json; chatset=utf-8")
+		resp.headers.set("content-type", ct ?? "application/json; charset=utf-8")
 
 		const anyHeaders = upstream.headers as unknown as { getSetCookie?: () => string[] }
 		const setCookie = anyHeaders.getSetCookie?.() ?? upstream.headers.get("set-cookie")
 
 		if (setCookie) {
 			if (Array.isArray(setCookie)) for (const c of setCookie) resp.headers.append("set-cookie", c)
-			else resp.headers.set("set.cookie", setCookie)
+			else resp.headers.set("set-cookie", setCookie)
 		}
 
 		return resp

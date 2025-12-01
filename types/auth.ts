@@ -20,3 +20,10 @@ export type MeResponse = {
 	total_invoices_failed: number
 	accounts: Account[]
 }
+
+export type ResetPasswordPayload = Record<string, unknown>
+
+export interface ResetPasswordResponse {
+	detail?: string
+	[key: string]: unknown
+}

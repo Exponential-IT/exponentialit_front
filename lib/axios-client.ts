@@ -1,7 +1,7 @@
 // lib/axios-client.ts
 "use client"
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig, AxiosHeaders } from "axios"
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosHeaders, AxiosRequestConfig } from "axios"
 import { useUserStore } from "@/stores/auth/auth-store"
 import { toast } from "sonner"
 
@@ -10,8 +10,21 @@ function isFormData(body: unknown): body is FormData {
 	return typeof FormData !== "undefined" && body instanceof FormData
 }
 
-/** ------- Axios base (cliente) ------- */
+/** ------- Axios base (cliente principal) ------- */
 const client: AxiosInstance = axios.create({
+	baseURL: "/api",
+	withCredentials: true,
+	headers: { accept: "application/json" },
+	timeout: 30_000,
+})
+
+/** ------- Cliente separado solo para refresh ------- */
+/**
+ * MUY IMPORTANTE:
+ * No usamos `client` aquí para evitar que el refresh pase por los mismos
+ * interceptores y genere recursión infinita.
+ */
+const refreshClient: AxiosInstance = axios.create({
 	baseURL: "/api",
 	withCredentials: true,
 	headers: { accept: "application/json" },
@@ -20,7 +33,6 @@ const client: AxiosInstance = axios.create({
 
 /** ------- Interceptor de request ------- */
 client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-	// Normaliza headers a AxiosHeaders
 	const headers = AxiosHeaders.from(config.headers)
 
 	if (config.data && isFormData(config.data)) {
@@ -31,7 +43,6 @@ client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 		headers.set("Content-Type", "application/json")
 	}
 
-	// Asigna AxiosHeaders (no un objeto plano)
 	config.headers = headers
 	return config
 })
@@ -43,16 +54,17 @@ type QueueItem = {
 }
 
 let isRefreshing = false
-let refreshPromise: Promise<Response> | null = null
 const pendingQueue: QueueItem[] = []
 
 const RETRY_STATUSES = new Set([401, 419, 440])
 
-async function doRefresh(): Promise<Response> {
-	return fetch("/api/refresh", {
-		method: "POST",
-		credentials: "include",
-	})
+async function doRefresh(): Promise<boolean> {
+	try {
+		const res = await refreshClient.post("/refresh")
+		return res.status >= 200 && res.status < 300
+	} catch {
+		return false
+	}
 }
 
 function enqueueRequest(): Promise<unknown> {
@@ -72,8 +84,8 @@ function flushQueue(error: unknown, data?: unknown): void {
 /** ------- Interceptor de response (refresh + retry) ------- */
 client.interceptors.response.use(
 	(res) => res,
-	async (error: AxiosError) => {
-		const original = error.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined
+	async (error: AxiosError<unknown>) => {
+		const original = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined
 		const status = error.response?.status
 
 		if (!original || !status || !RETRY_STATUSES.has(status) || original._retry) {
@@ -87,12 +99,10 @@ client.interceptors.response.use(
 				await enqueueRequest()
 			} else {
 				isRefreshing = true
-				refreshPromise = doRefresh()
 
-				const res = await refreshPromise
-				isRefreshing = false
+				const ok = await doRefresh()
 
-				if (!res.ok) {
+				if (!ok) {
 					useUserStore.getState().resetUser()
 					flushQueue(new Error("Refresh failed"))
 					try {
@@ -100,18 +110,21 @@ client.interceptors.response.use(
 					} catch {
 						/* noop */
 					}
-					if (typeof window !== "undefined") window.location.assign("/login")
+					if (typeof window !== "undefined") {
+						window.location.assign("/login")
+					}
 					return Promise.reject(error)
 				}
 
 				flushQueue(undefined, true)
 			}
 
-			return client(original)
+			return client(original as AxiosRequestConfig)
 		} catch (err: unknown) {
-			isRefreshing = false
 			flushQueue(err)
 			return Promise.reject(err)
+		} finally {
+			isRefreshing = false
 		}
 	}
 )

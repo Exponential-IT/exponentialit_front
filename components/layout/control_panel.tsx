@@ -1,15 +1,14 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card"
 
 import { useUserStore } from "@/stores/auth/auth-store"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { FileText, CircleCheckBig, CircleX } from "lucide-react"
 import InfoCard from "../common/card/info"
-import { LogoutButton } from "../common/logut_button"
+
+import { format_date } from "@/lib/utils/format"
 
 export default function ControlPanel() {
-	const user = useUserStore((s) => s.user)
-
 	const maximum_invoices = useUserStore((s) => s.maximum_invoices)
 	const total_invoices_user = useUserStore((s) => s.total_invoices_user)
 	const total_invoices_month = useUserStore((s) => s.total_invoices_month)
@@ -19,25 +18,18 @@ export default function ControlPanel() {
 	const total_invoices_success = useUserStore((s) => s.total_invoices_success)
 	const total_invoices_failed = useUserStore((s) => s.total_invoices_failed)
 
-	const fecha = new Date().toLocaleDateString("es-ES", {
-		weekday: "long",
-		day: "numeric",
-		month: "long",
-		year: "numeric",
-	})
+	const fecha = format_date()
 
 	return (
 		<Card>
 			<CardHeader className="flex flex-nowrap items-center justify-between">
 				<span>
-					<CardTitle>{user || "Panel de control"}</CardTitle>
 					<CardDescription>{fecha}</CardDescription>
 				</span>
 				<div className="flex justify-between gap-2">
 					<span className="bg-accent text-accent-foreground p-1 rounded-sm select-none text-center hidden md:block">
 						Consumo: {total_invoices_user} de {maximum_invoices} facturas
 					</span>
-					<LogoutButton />
 				</div>
 			</CardHeader>
 

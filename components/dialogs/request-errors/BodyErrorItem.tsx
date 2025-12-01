@@ -4,7 +4,7 @@
 import { DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import type { RequestErrorsResponse } from "@/types/error"
-import fmt from "@/lib/utils/format"
+import { fmt } from "@/lib/utils/format"
 import { DialogContent } from "@radix-ui/react-dialog"
 
 type Props = {
@@ -41,11 +41,11 @@ export default function BodyErrorItem({ data, requestId, finished }: Props) {
 						</div>
 					</div>
 
-					<div className="text-xs">
+					<div>
 						<span className="font-semibold">Error:</span>
-						<pre className="mt-1 overflow-auto rounded bg-muted p-2">
-							{JSON.stringify(e.error, null, 2)}
-						</pre>
+						<div className="text-xs mt-1 rounded bg-muted p-2 max-h-16 overflow-y-auto overflow-x-hidden break-all text-wrap">
+							{e.error}
+						</div>
 					</div>
 				</div>
 			</DialogContent>
